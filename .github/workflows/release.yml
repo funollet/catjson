@@ -1,0 +1,37 @@
+# .github/workflows/release.yml
+name: Release
+on:
+  release:
+    types: [published]
+jobs:
+  release:
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: darwin
+            
+
+    runs-on: "${{ matrix.os }}"
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+        architecture: x64
+    - name: Install dependencies
+      run: pip install shiv==0.5.2
+    - name: create dist folder
+      run: mkdir ./dist
+    - name: build executable artifact
+      run: shiv . -p '/usr/bin/env python3' -c catjson -o dist/catjson.py39.${{ matrix.platform }}.x64
+    - name: upload artifact
+      uses: alexellis/upload-assets@0.3.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        asset_paths: '["./dist/catjson.py39.${{ matrix.platform }}.x64"]'
