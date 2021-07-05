@@ -1,4 +1,4 @@
-# .github/workflows/release.yml
+# .github/workflows/shiv-artifacts.yml
 name: Create shiv artifacts
 on:
   release:
